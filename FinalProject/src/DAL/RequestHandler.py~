@@ -1,0 +1,62 @@
+'''
+Created on Mar 27, 2013
+
+@author: eliran shemer
+'''
+import mysql.connector
+import datetime
+from HttpObjects import *
+from time import strftime
+from datetime import datetime
+from Configuration.Config import Config
+       
+class RequestsHandler:
+    cnx = mysql.connector.connect(user=Config.USER, password=Config.PASSWORD, host=Config.HOST, database=Config.DATABASE)    
+    
+    
+    def insertRequest(self, req):
+        cursor = self.cnx.cursor()
+        #Handle requests table:
+        add_requests=("INSERT INTO Requests "
+                   "(Transactions_ID, method, http_version) "
+                   "VALUES (%s, %s, %s)")
+        data_requests=(req.transID, req.method, req.httpVersion)
+        cursor.execute(add_requests, data_requests)
+        self.cnx.commit()
+        self.cnx.close()
+        cursor.close()
+    
+    #Insert all requests in the given list to requests table on DB
+    def insertRequestsList(self, reqList):
+        cursor = self.cnx.cursor()
+        for i in range(0, len(reqList)):
+            add_requests=("INSERT INTO Requests "
+                   "(Transactions_ID, method, http_version) "
+                   "VALUES (%s, %s, %s)")
+            data_requests=(reqList[i].transID, reqList[i].method, reqList[i].httpVersion)
+            cursor.execute(add_requests, data_requests)
+        self.cnx.commit()
+        self.cnx.close()
+        cursor.close()
+    
+    #Return a list of requests with the given transaction id    
+    def getTransRequests(self, transID):
+        cursor = self.cnx.cursor()
+        #Handle requests table:
+        cursor.execute("Select * from Requests where Transactions_ID="+str(transID))
+        reqList=[]
+        for (Req_ID, http_version, Transactions_ID, method) in cursor:
+            request=Request.Request(Req_ID, http_version, Transactions_ID, method)
+            reqList.append(request)
+        self.cnx.commit()
+        self.cnx.close()
+        cursor.close()
+        return reqList
+    
+    
+
+#Testing:
+r=RequestsHandler()
+reqList=r.getTransRequests(308)
+for i in range(0, len(reqList)):
+    print(reqList[i].ID)
