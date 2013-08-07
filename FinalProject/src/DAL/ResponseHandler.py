@@ -13,7 +13,7 @@ from Configuration.Config import Config
 class ResponseHandler:
     cnx = mysql.connector.connect(user=Config.USER, password=Config.PASSWORD, host=Config.HOST, database=Config.DATABASE)    
     
-    #blabla
+    #blablabla
     #Insert a single Response to Responses table on DB
     def insertResponse(self, res):
         cursor = self.cnx.cursor()

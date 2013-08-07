@@ -3,7 +3,7 @@ import mysql.connector
 from Configuration.Config import Config
 
 _name_ = 'ConnectorPool'
-
+#git test1
 class ConnectorPool:
     cnx = mysql.connector.connect(user=Config.USER, password=Config.PASSWORD, host=Config.HOST, database=Config.DATABASE)
     cursor = cnx.cursor()
