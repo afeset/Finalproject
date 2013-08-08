@@ -19,8 +19,7 @@ class RquestsUserAgentPercentageReport:
         self.NumberOfBytesResult=0
         
     def loadResults(self):
-        cnx = mysql.connector.connect(user=Config.USER, password=Config.PASSWORD, host=Config.HOST, database=Config.DATABASE)
-        cursor = cnx.cursor()
+        cursor = ConnectorPool.ConnectorPool.GetConnector()
         #Percentage in terms of number of transactions:
         cursor.execute("SELECT Count(*) FROM Transactions")
         total=cursor.fetchone()
@@ -36,9 +35,7 @@ class RquestsUserAgentPercentageReport:
         self.NumberOfBytesResult=100*float(sum_of_bytes_begin[0])/float(sum_of_bytes_total[0])
         cursor.execute("SELECT * FROM Requests")
         self.NumberOfBytesResult=cursor.fetchall()
-        cursor.close()
-        cnx.commit()
-        cnx.close()
+        ConnectorPool.ConnectorPool.CloseConnector()
         
     def PrintReportResults(self):    
         print("Problematic user agents: PS3, playstation, xbox, nativehost, zune\n")

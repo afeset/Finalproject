@@ -5,18 +5,26 @@ from Configuration.Config import Config
 _name_ = 'ConnectorPool'
 #git test12
 class ConnectorPool:
-    cnx = mysql.connector.connect(user=Config.USER, password=Config.PASSWORD, host=Config.HOST, database=Config.DATABASE)
-    cursor = cnx.cursor()
+    #cnx = mysql.connector.connect(user=Config.USER, password=Config.PASSWORD, host=Config.HOST, database=Config.DATABASE)
+    #cursor = cnx.cursor()
+    cnx=0
+    cursor=0
     
     @staticmethod
     def GetConnector():
-        cnx = mysql.connector.connect(user=Config.USER, password=Config.PASSWORD, host=Config.HOST, database=Config.DATABASE)
-        cursor = cnx.cursor()
-        return cursor
+        if(ConnectorPool.cursor==0):
+            ConnectorPool.cnx = mysql.connector.connect(user=Config.USER, password=Config.PASSWORD, host=Config.HOST, database=Config.DATABASE)
+            ConnectorPool.cursor = ConnectorPool.cnx.cursor()
+        return ConnectorPool.cursor
         
+            
     @staticmethod
     def CloseConnector():
-        ConnectorPool.cursor.close()
-        ConnectorPool.cnx.commit()
-        ConnectorPool.cnx.close()   
+        if(ConnectorPool.cursor != 0):
+            ConnectorPool.cursor.close()
+            ConnectorPool.cursor=0
+        if(ConnectorPool.cnx!=0):
+            ConnectorPool.cnx.commit()
+            ConnectorPool.cnx.close()
+            ConnectorPool.cnx=0   
 

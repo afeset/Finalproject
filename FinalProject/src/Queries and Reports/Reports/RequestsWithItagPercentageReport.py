@@ -20,8 +20,7 @@ class RequestsWithItagPercentageReport:
         self.percent_bytes=0
         
     def loadResults(self):
-        cnx = mysql.connector.connect(user=Config.USER, password=Config.PASSWORD, host=Config.HOST, database=Config.DATABASE)
-        cursor = cnx.cursor()
+        cursor=ConnectorPool.ConnectorPool.GetConnector()
         #Get only distinct values of itag:
         cursor.execute("SELECT DISTINCT(Value) FROM `Requests-Params` WHERE Name_request_param='itag'")
         self.distinct=cursor.fetchall()
@@ -53,9 +52,7 @@ class RequestsWithItagPercentageReport:
             temp2=100*float(temp1[0])/float(sum_of_bytes_total[0])
             self.percent_bytes.append(temp2)
  
-        cursor.close()
-        cnx.commit()
-        cnx.close()
+        ConnectorPool.ConnectorPool.CloseConnector()
         
     def PrintReportResults(self):
         print("itag Statistics:\n")
@@ -72,6 +69,6 @@ class RequestsWithItagPercentageReport:
         print(self.percent_bytes)
         
 
-r=RequestsWithItagPercentageReport(1,1)
-r.loadResults()
-r.PrintReportResults()
+#r=RequestsWithItagPercentageReport(1,1)
+#r.loadResults()
+#r.PrintReportResults()

@@ -25,9 +25,10 @@ class RequestsPercentagePerHeaderReport:
         self.RequestsWithBeginNotEqZeroBytes=0
         
     def loadResults(self):
-        cnx = mysql.connector.connect(user=Config.USER, password=Config.PASSWORD, host=Config.HOST, database=Config.DATABASE)
-        cursor = cnx.cursor()
         
+        cursor=ConnectorPool.ConnectorPool.GetConnector()
+        
+        print("execute DB")
         #Percentage in terms of number of transactions:
         cursor.execute("SELECT COUNT(*) FROM `Transactions`")
         total=cursor.fetchone()
@@ -64,9 +65,7 @@ class RequestsPercentagePerHeaderReport:
         sum_of_bytes_begin=cursor.fetchone()
         self.RequestsWithBeginNotEqZeroBytes=float(int(sum_of_bytes_begin[0] or 0))/float(sum_of_bytes_total[0])
         
-        cursor.close()
-        cnx.commit()
-        cnx.close()
+        ConnectorPool.ConnectorPool.CloseConnector()
         
     def PrintReportResults(self):    
         print("Percentage of Requests with 'begin' URI param (all values):")
@@ -101,7 +100,8 @@ class RequestsPercentagePerHeaderReport:
         print(self.RequestsWithBeginNotEqZeroBytes)
         
         
-#r=RequestsPercentagePerHeaderReport(1,1,1)
-#r.loadResults()
-#r.PrintReportResults()       
+r=RequestsPercentagePerHeaderReport(1,1,1)
+r.loadResults()
+r.PrintReportResults()       
+
 

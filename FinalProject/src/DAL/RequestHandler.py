@@ -9,13 +9,14 @@ from HttpObjects import *
 from time import strftime
 from datetime import datetime
 from Configuration.Config import Config
+from DAL import ConnectorPool
        
 class RequestsHandler:
-    cnx = mysql.connector.connect(user=Config.USER, password=Config.PASSWORD, host=Config.HOST, database=Config.DATABASE)    
+        
     
     
     def insertRequest(self, req):
-        cursor = self.cnx.cursor()
+        cursor = ConnectorPool.ConnectorPool.GetConnector()
         #Handle requests table:
         add_requests=("INSERT INTO Requests "
                    "(Transactions_ID, method, http_version) "
@@ -35,22 +36,18 @@ class RequestsHandler:
                    "VALUES (%s, %s, %s)")
             data_requests=(reqList[i].transID, reqList[i].method, reqList[i].httpVersion)
             cursor.execute(add_requests, data_requests)
-        self.cnx.commit()
-        self.cnx.close()
-        cursor.close()
+            cursor = ConnectorPool.ConnectorPool.CloseConnector()
     
     #Return a list of requests with the given transaction id    
     def getTransRequests(self, transID):
-        cursor = self.cnx.cursor()
+        cursor = ConnectorPool.ConnectorPool.GetConnector()
         #Handle requests table:
         cursor.execute("Select * from Requests where Transactions_ID="+str(transID))
         reqList=[]
         for (Req_ID, http_version, Transactions_ID, method) in cursor:
             request=Request.Request(Req_ID, http_version, Transactions_ID, method)
             reqList.append(request)
-        self.cnx.commit()
-        self.cnx.close()
-        cursor.close()
+        cursor = ConnectorPool.ConnectorPool.CloseConnector()
         return reqList
     
     
