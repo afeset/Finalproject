@@ -69,6 +69,6 @@ class RequestsWithItagPercentageReport:
         print(self.percent_bytes)
         
 
-#r=RequestsWithItagPercentageReport(1,1)
-#r.loadResults()
-#r.PrintReportResults()
+r=RequestsWithItagPercentageReport(1,1)
+r.loadResults()
+r.PrintReportResults()

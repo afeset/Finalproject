@@ -25,16 +25,21 @@ class RquestsUserAgentPercentageReport:
         total=cursor.fetchone()
         cursor.execute("SELECT Count(*) FROM `Requests-Headers` WHERE Header_Name LIKE '%user-agent%' AND (Value LIKE '%"+UserAgent.Nativehost+"%' OR Value LIKE '%"+UserAgent.PS3+"%' OR Value LIKE '%"+UserAgent.Playstation+"%' OR Value LIKE '%"+UserAgent.Xbox+"%' OR Value LIKE '%"+UserAgent.Zune+"%')")
         count=cursor.fetchone()
-        self.NumberOfTransactionsResult=100*(float(count[0])/float(total[0]))
+        if total[0] == 0 :
+            print ("Empty Database - cannot complete calculation\n")
+        else :
+            self.NumberOfTransactionsResult=100*(float(count[0])/float(total[0]))
         
         #Percentage in terms of number of bytes:
         cursor.execute("SELECT SUM(NumDownloadedBytes) FROM Transactions")
         sum_of_bytes_total=cursor.fetchone()
         cursor.execute("SELECT SUM(NumDownloadedBytes) FROM Transactions WHERE ID= ANY (SELECT Transactions_ID FROM Requests WHERE Req_ID= ANY (SELECT Request_ID FROM `Requests-Headers` WHERE Header_Name LIKE '%user-agent%' AND (Value LIKE '%"+UserAgent.Nativehost+"%' OR Value LIKE '%"+UserAgent.PS3+"%' OR Value LIKE '%"+UserAgent.Playstation+"%' OR Value LIKE '%"+UserAgent.Xbox+"%' OR Value LIKE '%"+UserAgent.Zune+"%')))")
         sum_of_bytes_begin=cursor.fetchone()
-        self.NumberOfBytesResult=100*float(sum_of_bytes_begin[0])/float(sum_of_bytes_total[0])
-        cursor.execute("SELECT * FROM Requests")
-        self.NumberOfBytesResult=cursor.fetchall()
+        if sum_of_bytes_total[0] == None :
+            print ("Empty Database - cannot complete calculation\n")
+        else :
+            self.NumberOfBytesResult=100*float(sum_of_bytes_begin[0])/float(sum_of_bytes_total[0])
+        
         ConnectorPool.ConnectorPool.CloseConnector()
         
     def PrintReportResults(self):    
@@ -47,8 +52,10 @@ class RquestsUserAgentPercentageReport:
         print("Percentage of Requests with user problematic user agents:\n")
         print("In terms of bytes:")
         print(self.NumberOfBytesResult)
-        
+     
+    
+
 r=RquestsUserAgentPercentageReport(1,1,1)
 r.loadResults()
-r.PrintReportResults()       
+r.PrintReportResults()      
 

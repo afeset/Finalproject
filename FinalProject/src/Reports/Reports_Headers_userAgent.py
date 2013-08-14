@@ -16,20 +16,26 @@ cursor.execute("SELECT Count(*) FROM Transactions")
 total=cursor.fetchone()
 cursor.execute("SELECT Count(*) FROM `Requests-Headers` WHERE Header_Name LIKE '%user-agent%' AND (Value LIKE '%nativehost%' OR Value LIKE '%PS3%' OR Value LIKE '%playstation%' OR Value LIKE '%xbox%' OR Value LIKE '%zune%')")
 count=cursor.fetchone()
-result=100*(float(count[0])/float(total[0]))
-print("Problematic user agents: PS3, playstation, xbox, nativehost, zune\n")
-print("Percentage of Requests with user problematic user agents:\n")
-print("In terms of number of transactions:")
-print(result)
+if total[0] == 0 :
+    print("Empty Database")
+else :
+    result=100*(float(count[0])/float(total[0]))
+    print("Problematic user agents: PS3, playstation, xbox, nativehost, zune\n")
+    print("Percentage of Requests with user problematic user agents:\n")
+    print("In terms of number of transactions:")
+    print(result)
 
 #Percentage in terms of number of bytes:
 cursor.execute("SELECT SUM(NumDownloadedBytes) FROM Transactions")
 sum_of_bytes_total=cursor.fetchone()
 cursor.execute("SELECT SUM(NumDownloadedBytes) FROM Transactions WHERE ID= ANY (SELECT Transactions_ID FROM Requests WHERE Req_ID= ANY (SELECT Request_ID FROM `Requests-Headers` WHERE Header_Name LIKE '%user-agent%' AND (Value LIKE '%nativehost%' OR Value LIKE '%PS3%' OR Value LIKE '%playstation%' OR Value LIKE '%xbox%' OR Value LIKE '%zune%')))")
 sum_of_bytes_begin=cursor.fetchone()
-result=100*float(sum_of_bytes_begin[0])/float(sum_of_bytes_total[0])
-print("In terms of bytes:")
-print(result)
+if sum_of_bytes_total[0] == 0 :
+    print ("Empty Database")
+else :
+    result=100*float(sum_of_bytes_begin[0])/float(sum_of_bytes_total[0])
+    print("In terms of bytes:")
+    print(result)
 
 
 cursor.close()

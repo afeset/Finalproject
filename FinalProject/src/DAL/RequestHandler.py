@@ -23,9 +23,7 @@ class RequestsHandler:
                    "VALUES (%s, %s, %s)")
         data_requests=(req.transID, req.method, req.httpVersion)
         cursor.execute(add_requests, data_requests)
-        self.cnx.commit()
-        self.cnx.close()
-        cursor.close()
+        ConnectorPool.ConnectorPool.CloseConnector()
     
     #Insert all requests in the given list to requests table on DB
     def insertRequestsList(self, reqList):
